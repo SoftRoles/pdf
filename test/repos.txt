@@ -1,0 +1,2 @@
+https://github.com/abodelot/jquery.json-viewer 132b9e4
+https://github.com/blueimp/jQuery-File-Upload ee54fc3

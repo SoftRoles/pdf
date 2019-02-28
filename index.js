@@ -100,6 +100,13 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require("cors")())
 
 //=============================================================================
+// test page
+//=============================================================================
+app.use(`/pdf/test`, express.static(path.join(__dirname, 'test')))
+app.use(`/pdf/test`, express.static(path.join(__dirname, 'test/node_modules')))
+app.use(`/pdf/test`, express.static(path.join(__dirname, 'test/git_repos')))
+
+//=============================================================================
 // start service
 //=============================================================================
 app.listen(Number(args.port), function () {
