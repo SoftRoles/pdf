@@ -1,0 +1,22 @@
+{
+  "name": "pdf",
+  "version": "1.0.0",
+  "description": "PDF scrapping and manipulation service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/softroles/pdf.git"
+  },
+  "keywords": [
+    "pdf"
+  ],
+  "author": "Hüseyin Yiğit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/softroles/pdf/issues"
+  },
+  "homepage": "https://github.com/softroles/pdf#readme"
+}
