@@ -123,7 +123,6 @@ fs.mkdir('tmp', err => { })
 // bookmarks
 //-------------------------------------
 app.post('/pdf/api/v1/bookmark', function (req, res) {
-    console.log(req.files['files'])
     let ufile = req.files.files
     let file = {
         owners: req.body.owners ? req.body.owners.split(",") : [],
@@ -131,44 +130,32 @@ app.post('/pdf/api/v1/bookmark', function (req, res) {
         basename: ufile.name,
         name: String(Date.now()) + "-" + ufile.name,
         size: ufile.size,
-        folder: req.body.folder,
+        folder: req.body.folder || 'tmp',
         mdate: req.body.mdate,
-        date: moment().format("YYYY.MM.DD HH:mm:ss"),
+        date: moment().format("YYYY/MM/DD HH:mm:ss"),
         mimetype: ufile.mimetype
     }
-    // console.log(file)
-    ufile.mv(path.join(__dirname, 'tmp', /*file.folder,*/ file.name), function (err) {
+    const folder = req.body.save ?
+        path.normalize(path.join(__dirname, "../../Datas/files", file.folder)) :
+        path.join(__dirname, file.folder)
+    fs.mkdir(folder, err => { })
+    ufile.mv(path.join(folder, file.name), function (err) {
         if (err) res.send(err);
-        file.sizeStr = filesize(file.size)
-        file.users.push(req.user.username)
-        // console.log(req.user)
-        file.owners.push(req.user.username)
-        if (file.users.indexOf("admin") === -1) { file.users.push("admin") }
-        if (file.owners.indexOf("admin") === -1) { file.owners.push("admin") }
-        console.log(file)
-        // mongodb.db("filesystem").collection("files").insertOne(file, function (err, r) {
-        //     if (err) res.send({ error: err })
-        //     else res.send(Object.assign({}, r.result, { insertedId: r.insertedId }, file))
-        // });
+        if (req.body.save) {
+            file.sizeStr = filesize(file.size)
+            file.users.push(req.user.username)
+            file.owners.push(req.user.username)
+            if (file.users.indexOf("admin") === -1) { file.users.push("admin") }
+            if (file.owners.indexOf("admin") === -1) { file.owners.push("admin") }
+            mongodb.db("filesystem").collection("files").insertOne(file, function (err, r) {
+                if (err) res.send({ error: err })
+                else res.send(Object.assign({}, r.result, { insertedId: r.insertedId }, { file: file }))
+            });
+        }
+        else {
+            res.send(file)
+        }
     });
-    res.send({})
-    // if (!req.files) return res.sendStatus(400)
-    // mkdirp(path.join(filesFolder, req.body.folder), function (err) {
-    //     if (err) res.send(err)
-    //     req.files.upload.mv(path.join(filesFolder, file.folder, file.name), function (err) {
-    //         if (err) res.send(err);
-    //         file.size = fs.statSync(path.join(filesFolder, file.folder, file.name)).size
-    //         file.sizeStr = filesize(file.size)
-    //         file.users.push(req.user.username)
-    //         file.owners.push(req.user.username)
-    //         if (file.users.indexOf("admin") === -1) { file.users.push("admin") }
-    //         if (file.owners.indexOf("admin") === -1) { file.owners.push("admin") }
-    //         mongodb.db("filesystem").collection("files").insertOne(file, function (err, r) {
-    //             if (err) res.send({ error: err })
-    //             else res.send(Object.assign({}, r.result, { insertedId: r.insertedId }, file))
-    //         });
-    //     });
-    // })
 });
 
 //=============================================================================

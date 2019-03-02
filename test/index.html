@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>System : Test @ SoftRoles</title>
+    <title>SoftRoles : pdf : test</title>
 
     <!-- JQuery -->
     <script src="jquery/dist/jquery.min.js"></script>
@@ -23,115 +23,39 @@
     <script src="jQuery-File-Upload/js/jquery.iframe-transport.js"></script>
     <script src="jQuery-File-Upload/js/jquery.fileupload.js"></script>
 
-    <style>
-        .col-6 {
-            min-height: 200px;
-        }
-    </style>
-
 </head>
 
 <body>
-
-    <input id="fileupload" type="file" name="files" data-url="/pdf/api/v1/bookmark">
-
     <div class="container-fluid">
         <div class="row">
             <div class="col-6 px-4">
                 <div class="row">
-                    <div class="input-group">
+                    <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text bg-primary text-white">GET</span>
+                            <span class="input-group-text bg-info text-white" id="inputGroupFileAddon01">POST</span>
                         </div>
-                        <select id="url" class="form-control">
-                            <option value="http://127.0.0.1/system/api/v1/cpu">http://127.0.0.1/system/api/v1/cpu
-                            </option>
-                        </select>
-                        <div id="send" class="input-group-append">
-                            <button class="btn btn-success"> Send</button>
+                        <div class="custom-file">
+                            <input id="fileupload" type="file" name="files" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <pre id="response"></pre>
-                </div>
-            </div>
-            <div class="col-6 px-4">
-                <div class="row">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-info text-white">POST</span>
-                        </div>
-                        <select id="url" class="form-control">
-                            <!-- <option value="http://127.0.0.1/system/api/v1/cpu">http://127.0.0.1/system/api/v1/cpu</option> -->
-                        </select>
-                        <div id="send" class="input-group-append">
-                            <button class="btn btn-success"> Send</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <pre id="response"></pre>
-                </div>
-            </div>
-            <div class="col-6 px-4">
-                <div class="row">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-warning text-white">PUT</span>
-                        </div>
-                        <select id="url" class="form-control">
-                            <!-- <option value="http://127.0.0.1/system/api/v1/cpu">http://127.0.0.1/system/api/v1/cpu</option> -->
-                        </select>
-                        <div id="send" class="input-group-append">
-                            <button class="btn btn-success"> Send</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <pre id="response"></pre>
-                </div>
-            </div>
-            <div class="col-6 px-4">
-                <div class="row">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-danger text-white">DELETE</span>
-                        </div>
-                        <select id="url" class="form-control">
-                            <!-- <option value="http://127.0.0.1/system/api/v1/cpu">http://127.0.0.1/system/api/v1/cpu</option> -->
-                        </select>
-                        <div id="send" class="input-group-append">
-                            <button class="btn btn-success"> Send</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <pre id="response"></pre>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('send').addEventListener('click', function (event) {
-            var xhr = new XMLHttpRequest()
-            xhr.onreadystatechange = function () {
-                console.log(xhr.response)
-                if (xhr.readyState === 4) {
-                    $('#response').jsonViewer(JSON.parse(xhr.response));
-                }
-            }
-            xhr.open('GET', document.getElementById('url').value, true)
-            xhr.send()
-
-        })
-
         $(function () {
             $('#fileupload').fileupload({
                 datatype: 'json',
-                done: function(e, data){
+                url: "/pdf/api/v1/bookmark",
+                done: function (e, data) {
                     console.log(data.result)
+                },
+                add: function (e, data) {
+                    $('#fileupload').next().text(data.files[0].name)
+                    data.formData = { /*save: true, folder: "test",*/ mdate: data.files[0].lastModifiedDate }
+                    data.submit()
                 }
             })
         })
