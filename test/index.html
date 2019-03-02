@@ -55,7 +55,12 @@
                 add: function (e, data) {
                     $('#fileupload').next().text(data.files[0].name)
                     data.formData = { /*save: true, folder: "test",*/ mdate: data.files[0].lastModifiedDate }
-                    data.submit()
+                    if (data.files[0].type != "application/pdf") {
+                        alert('File should be pdf!')
+                    }
+                    else{
+                        data.submit()
+                    }
                 }
             })
         })
