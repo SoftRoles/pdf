@@ -11,6 +11,7 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 const filesize = require("filesize")
+const { exec } = require('child_process')
 
 //-------------------------------------
 // arguments
@@ -123,6 +124,7 @@ fs.mkdir('tmp', err => { })
 // bookmarks
 //-------------------------------------
 app.post('/pdf/api/v1/bookmark', function (req, res) {
+    let response = {}
     let ufile = req.files.files
     let file = {
         owners: req.body.owners ? req.body.owners.split(",") : [],
@@ -149,12 +151,19 @@ app.post('/pdf/api/v1/bookmark', function (req, res) {
             if (file.owners.indexOf("admin") === -1) { file.owners.push("admin") }
             mongodb.db("filesystem").collection("files").insertOne(file, function (err, r) {
                 if (err) res.send({ error: err })
-                else res.send(Object.assign({}, r.result, { insertedId: r.insertedId }, { file: file }))
+                response._id = r.insertedId
+                // else res.send(Object.assign({}, r.result, { insertedId: r.insertedId }, { file: file }))
             });
         }
         else {
-            res.send(file)
+            // res.send(file)
         }
+        exec('pdftk "' + path.join(folder, file.name) + '" dump_data | grep BookmarkTitle', { windowsHide: true }, (err, stdout, stderr) => {
+            console.log(err)
+            console.log(stderr)
+            if (!req.body.save) fs.unlink(path.join(folder, file.name), err => { })
+            res.send(Object.assign(response, { bookmarks: stdout.split('\n') }))
+        })
     });
 });
 
