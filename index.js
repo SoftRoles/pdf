@@ -12,6 +12,7 @@ const path = require('path')
 const moment = require('moment')
 const filesize = require("filesize")
 const { exec } = require('child_process')
+const websocket = require('ws')
 
 //-------------------------------------
 // arguments
@@ -38,6 +39,12 @@ mongoClient.connect(mongodbUrl, { poolSize: 10, useNewUrlParser: true }, functio
 // http server
 //=============================================================================
 const app = express();
+const server = require('http').createServer(app);
+
+//=============================================================================
+// websocket server
+//=============================================================================
+const wss = new websocket.Server({ server });
 
 //-------------------------------------
 // session store
@@ -124,6 +131,7 @@ fs.mkdir('tmp', err => { })
 // bookmarks
 //-------------------------------------
 app.post('/pdf/api/v1/bookmark', function (req, res) {
+    console.log(req.user)
     let response = {}
     let ufile = req.files.files
     let file = {
@@ -170,6 +178,16 @@ app.post('/pdf/api/v1/bookmark', function (req, res) {
 //=============================================================================
 // start service
 //=============================================================================
-app.listen(Number(args.port), function () {
+server.listen(Number(args.port), function () {
     console.log(`Service running on http://127.0.0.1:${args.port}`)
 })
+
+
+wss.on('connection', function connection(ws) {
+    console.log('Client connected.')
+    // ws.on('message', function incoming(message) {
+    //     console.log('received: %s', message);
+    // });
+
+    ws.send(JSON.stringify({ bookmarks: 'something' }));
+});

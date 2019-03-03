@@ -58,12 +58,17 @@
                     if (data.files[0].type != "application/pdf") {
                         alert('File should be pdf!')
                     }
-                    else{
+                    else {
                         data.submit()
                     }
                 }
             })
         })
+
+        var socket = new WebSocket('ws://127.0.0.1:3011')
+        socket.onmessage = function (event) {
+            console.log(JSON.parse(event.data))
+        }
     </script>
 
 </body>
